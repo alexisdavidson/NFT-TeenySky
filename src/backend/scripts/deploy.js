@@ -20,20 +20,10 @@ async function main() {
   // const whitelistAddresses = [teamWallet] // mainnet
   
   const NFT = await ethers.getContractFactory("NFT");
-  const Token = await ethers.getContractFactory("Token");
-  const NFTStaker = await ethers.getContractFactory("NFTStaker");
   const nft = await NFT.deploy(teamWallet, whitelistAddresses);
   console.log("NFT contract address", nft.address)
-  const nftStaker = await NFTStaker.deploy(nft.address);
-  console.log("NFTStaker contract address", nftStaker.address)
-  const token = await Token.deploy([nftStaker.address, teamWallet], [73000000, 149000000]);
-  console.log("Token contract address", token.address)
-  await nftStaker.setOwnerAndTokenAddress(teamWallet, token.address);
-  console.log("setOwnerAndTokenAddress call done")
   
   saveFrontendFiles(nft, "NFT");
-  saveFrontendFiles(token, "Token");
-  saveFrontendFiles(nftStaker, "NFTStaker");
 
   console.log("Frontend files saved")
 }

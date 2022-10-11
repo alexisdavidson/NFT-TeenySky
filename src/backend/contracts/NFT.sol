@@ -1,57 +1,40 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.4;
 
-import "./Pool.sol";
 import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "erc721a/contracts/ERC721A.sol";
-import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract NFT is ERC721A, Ownable, ReentrancyGuard {
-    ERC20 public methereumToken;
-    Pool private poolContract;
-
     string public constant uriSuffix = '.json';
 
-    uint256 public immutable max_supply = 8000;
+    uint256 public immutable max_supply = 15000;
 
-    uint public amountMintPerAccount = 1;
+    uint public amountMintPerAccount = 10;
 
-    bool public whitelistEnabled = true;
     address[] private whitelistedAddresses;
 
     bool public publicSaleEnabled;
+    bool public isRevealed;
 
-    string private constant unkownNotRevealedUri = "Not revealed yet";
-    string[20] private unknownUris; // 20 unkown to be revealed one by one as the story progresses.
+    string private constant baseUri10000 = "ipfs://QmSyiuuT6QcCoLcy15MwoFn6dgkgzg63ebFvrxQLerFkMe/";
+    string private constant baseUri15000 = "ipfs://QmTrrNAKRTz286SYD3a7BmnqGcHG1rp2E387AcAEJi8Adm/";
+    string private constant unrevealedUri = "Not revealed yet";
 
-    uint256 public price;
+    uint256 public publicSalePrice = 323.8 ether;
+    uint256 public whitelistPrice = 200.7 ether;
     
     event MintSuccessful(
         address user
     );
 
-    constructor(address methereumTokenAddress, address poolAddress, address ownerAddress, address teamAddress1, address teamAddress2, address[] memory _usersToWhitelist) ERC721A("Metha NFT", "MT")
+    constructor(address ownerAddress, address[] memory _usersToWhitelist) ERC721A("teenySkySJBBs", "TSSJBBS")
     {
-        methereumToken = ERC20(methereumTokenAddress);
-        poolContract = Pool(poolAddress);
-
         // Set whitelist
         delete whitelistedAddresses;
         whitelistedAddresses = _usersToWhitelist;
-
-        // Mint 75 NFTs for each team wallet
-        _mint(teamAddress1, 75);
-        _mint(teamAddress2, 75);
-
-        // Set unkownUris
-        uint256 unknownUrisLength = unknownUris.length;
-        for (uint256 i = 0; i < unknownUrisLength;) {
-            unknownUris[i] = unkownNotRevealedUri;
-            unchecked { ++i; }
-        }
 
         // Transfer ownership
         _transferOwnership(ownerAddress);
@@ -60,18 +43,20 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
         require(_exists(_tokenId), 'ERC721Metadata: URI query for nonexistent token ');
 
-        if (_tokenId < 20 && isUnkownRevealed(_tokenId)) { // 20 first tokens are Unkowns
-            return unknownUris[_tokenId];
+        if (!isRevealed) {
+            return unrevealedUri;
         }
 
         string memory currentBaseURI = _baseURI();
+        if (_tokenId > 10000) {
+            currentBaseURI = baseUri15000;
+        }
         return bytes(currentBaseURI).length > 0
             ? string(abi.encodePacked(currentBaseURI, Strings.toString(_tokenId), uriSuffix))
             : '';
     }
 
     function mint(uint256 quantity) external payable {
-        require(methereumToken.balanceOf(msg.sender) > 0, 'Have to hold Methereum Token to mint');
         require(totalSupply() + quantity < max_supply, 'Cannot mint more than max supply');
         require(publicSaleEnabled || isWhitelisted(address(msg.sender)), 'You are not whitelisted');
         require(balanceOf(msg.sender) < amountMintPerAccount, 'Each address may only mint x NFTs!');
@@ -82,7 +67,7 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://Qmbx9io6LppmpvavX3EqZY8igQxPZh7koUzW3mPRLkLQir/";
+        return baseUri10000;
     }
     
     function baseTokenURI() public pure returns (string memory) {
@@ -95,10 +80,6 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
 
     function setPublicSaleEnabled(bool _state) public onlyOwner {
         publicSaleEnabled = _state;
-    }
-
-    function setWhitelistEnabled(bool _state) public onlyOwner {
-        whitelistEnabled = _state;
     }
 
     function whitelistUsers(address[] calldata _users) public onlyOwner {
@@ -117,23 +98,23 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
         return false;
     }
 
-    function revealUnkown(uint256 _tokenId, string calldata tokenUri) public onlyOwner {
-        require(_tokenId < 20, "tokenId must be between 0 and 20");
-        require(!isUnkownRevealed(_tokenId), "unkown has already been revealed");
-
-        unknownUris[_tokenId] = tokenUri;
-    }
-
-    function isUnkownRevealed(uint256 _tokenId) public view returns(bool) {
-        return keccak256(abi.encodePacked((unknownUris[_tokenId]))) != keccak256(abi.encodePacked((unkownNotRevealedUri)));
+    function reveal() public onlyOwner {
+        isRevealed = true;
     }
 
     function getPrice() view public returns(uint) {
-        return price;
+        if (publicSaleEnabled) {
+            return publicSalePrice;
+        }
+        return whitelistPrice;
     }
 
-    function setPrice(uint _price) public onlyOwner {
-        price = _price;
+    function setPublicSalePrice(uint _price) public onlyOwner {
+        publicSalePrice = _price;
+    }
+
+    function setWhitelistPrice(uint _price) public onlyOwner {
+        whitelistPrice = _price;
     }
 
     function setAmountMintPerAccount(uint _amountMintPerAccount) public onlyOwner {
@@ -142,20 +123,5 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
 
     function withdraw() external onlyOwner {
         payable(msg.sender).transfer(address(this).balance);
-    }
-
-    function settleMonth(uint256 _winnerTeam) external onlyOwner {
-        uint256 _fundsCollected = address(this).balance;
-        uint256 _reward = _fundsCollected / 1000;
-
-        (bool success, ) = payable(address(poolContract)).call{value: _fundsCollected}("");
-        require(success, "Claim failed");
-
-        poolContract.distributeReward(_winnerTeam, _reward);
-    }
-
-    function claimReward(uint256 _tokenId) external nonReentrant {
-        require(ownerOf(_tokenId) == msg.sender, 'You need to own this token');
-        poolContract.claimReward(msg.sender);
     }
 }
