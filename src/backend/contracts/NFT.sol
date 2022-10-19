@@ -18,10 +18,11 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
 
     bool public publicSaleEnabled;
     bool public isRevealed;
+    bool public paused;
 
     string private constant baseUri10000 = "ipfs://QmSyiuuT6QcCoLcy15MwoFn6dgkgzg63ebFvrxQLerFkMe/";
     string private constant baseUri15000 = "ipfs://QmTrrNAKRTz286SYD3a7BmnqGcHG1rp2E387AcAEJi8Adm/";
-    string private constant unrevealedUri = "Not revealed yet";
+    string private constant unrevealedUri = "ipfs://QmRVuGy5diJWnNsyQaCEYKiMcS84TqjyBKzZRpn8R2aqhP";
 
     uint256 public publicSalePrice = 323.8 ether;
     uint256 public whitelistPrice = 200.7 ether;
@@ -57,10 +58,15 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
     }
 
     function mint(uint256 quantity) external payable {
+        require(!paused, 'Minting is paused');
         require(totalSupply() + quantity < max_supply, 'Cannot mint more than max supply');
         require(publicSaleEnabled || isWhitelisted(address(msg.sender)), 'You are not whitelisted');
         require(balanceOf(msg.sender) < amountMintPerAccount, 'Each address may only mint x NFTs!');
-        require(msg.value >= getPrice(), "Not enough ETH sent; check price!");
+        require(msg.value >= getPrice() * quantity, "Not enough ETH sent; check price!");
+
+        if (quantity > 2 && quantity < 10) {
+            quantity += 1;
+        }
         _mint(msg.sender, quantity);
         
         emit MintSuccessful(msg.sender);
@@ -115,6 +121,10 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
 
     function setWhitelistPrice(uint _price) public onlyOwner {
         whitelistPrice = _price;
+    }
+
+    function setPause(bool _state) public onlyOwner {
+        paused = _state;
     }
 
     function setAmountMintPerAccount(uint _amountMintPerAccount) public onlyOwner {
