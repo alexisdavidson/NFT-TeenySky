@@ -5,8 +5,7 @@ const fromWei = (num) => ethers.utils.formatEther(num)
 
 describe("NFT", async function() {
     let deployer, addr1, addr2, nft
-    let URI = "ipfs://Qmbx9io6LppmpvavX3EqZY8igQxPZh7koUzW3mPRLkLQir/"
-    let UnkownURI = "unkownURI"
+    let URI = "ipfs://QmSyiuuT6QcCoLcy15MwoFn6dgkgzg63ebFvrxQLerFkMe/"
     let teamWallet = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266"
     let whitelist = []
 
@@ -24,52 +23,44 @@ describe("NFT", async function() {
 
     describe("Deployment", function() {
         it("Should track name and symbol of the nft collection", async function() {
-            expect(await nft.name()).to.equal("Metha NFT")
-            expect(await nft.symbol()).to.equal("MT")
-        })
-
-        it("Should have 333 NFTs minted and belonging to the team wallet", async function() {
-            expect(await nft.totalSupply()).to.equal(333)
-            expect(await nft.balanceOf(teamWallet)).to.equal(333)
+            expect(await nft.name()).to.equal("teenySkySJBBs")
+            expect(await nft.symbol()).to.equal("TSSJBBS")
         })
     })
 
     describe("Minting NFTs", function() {
         it("Should track each minted NFT", async function() {
             // addr1 mints an nft
-            await nft.connect(addr1).mint(1);
-            expect(await nft.totalSupply()).to.equal(334);
+            let price = fromWei(await nft.getPrice())
+            console.log("Price: " + price)
+            await nft.connect(addr1).mint(1, { value: toWei(price) });
+            expect(await nft.totalSupply()).to.equal(1);
             expect(await nft.balanceOf(addr1.address)).to.equal(1);
             // addr2 mints 2 nfts
-            await nft.connect(addr2).mint(2);
-            expect(await nft.totalSupply()).to.equal(336);
-            expect(await nft.balanceOf(addr2.address)).to.equal(2);
+            // mint 2 or more, 1 free
+            await nft.connect(addr2).mint(2, { value: toWei(price * 2) });
+            expect(await nft.totalSupply()).to.equal(4);
+            expect(await nft.balanceOf(addr2.address)).to.equal(3);
         })
 
         it("Should not mint more NFTs than the max supply", async function() {
-            await expect(nft.connect(addr1).mint(10000)).to.be.revertedWith('Cannot mint more than max supply');
+            await expect(nft.connect(addr1).mint(16000)).to.be.revertedWith('Cannot mint more than max supply');
         })
     })
 
     describe("URIs", function() {
         it("Should have correct URIs", async function() {
-            await nft.connect(addr2).mint(3);
-            expect(await nft.totalSupply()).to.equal(336);
+            let price = fromWei(await nft.getPrice())
+            await nft.connect(addr2).mint(2, { value: toWei(price * 2) });
+            expect(await nft.totalSupply()).to.equal(3);
             
+            await nft.reveal();
             //Unknown URIs. When not revealed, it stays the base URI
-            expect(await nft.tokenURI(0)).to.equal(URI + "0.json");
+            expect(await nft.tokenURI(1)).to.equal(URI + "1.json");
             expect(await nft.tokenURI(19)).to.equal(URI + "19.json");
             //Normal URIs
             expect(await nft.tokenURI(20)).to.equal(URI + "20.json");
             expect(await nft.tokenURI(334)).to.equal(URI + "334.json");
-        })
-
-        it("Should update Unkown URI", async function() {
-            await nft.revealUnkown(0, "UnkownUri0");
-            expect(await nft.tokenURI(0)).to.equal("UnkownUri0");
-            
-            await expect(nft.revealUnkown(0, "UnkownUri0")).to.be.revertedWith('unkown has already been revealed');
-            await expect(nft.revealUnkown(20, "UnkownUri20")).to.be.revertedWith('tokenId must be between 0 and 20');
         })
     })
 

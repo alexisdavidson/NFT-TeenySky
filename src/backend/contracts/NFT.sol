@@ -5,9 +5,8 @@ import "hardhat/console.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "erc721a/contracts/ERC721A.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract NFT is ERC721A, Ownable, ReentrancyGuard {
+contract NFT is ERC721A, Ownable {
     string public constant uriSuffix = '.json';
 
     uint256 public immutable max_supply = 15000;
@@ -42,7 +41,7 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
     }
 
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
-        require(_exists(_tokenId), 'ERC721Metadata: URI query for nonexistent token ');
+        require(_exists(_tokenId), 'ERC721Metadata: URI query for nonexistent token');
 
         if (!isRevealed) {
             return unrevealedUri;
@@ -64,7 +63,7 @@ contract NFT is ERC721A, Ownable, ReentrancyGuard {
         require(balanceOf(msg.sender) < amountMintPerAccount, 'Each address may only mint x NFTs!');
         require(msg.value >= getPrice() * quantity, "Not enough ETH sent; check price!");
 
-        if (quantity > 2 && quantity < 10) {
+        if (quantity > 1 && quantity < 10) {
             quantity += 1;
         }
         _mint(msg.sender, quantity);

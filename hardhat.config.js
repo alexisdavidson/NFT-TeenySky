@@ -19,6 +19,13 @@ module.exports = {
        gas: 2100000,
        gasPrice: 8000000000,
      },
+     goerli: {
+       url: process.env.REACT_APP_API_URL_GOERLI,
+       accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_GOERLI],
+       allowUnlimitedContractSize: true,
+       gas: 2100000,
+       gasPrice: 8000000000,
+     },
      matic: {
        url: process.env.REACT_APP_API_URL_MATIC,
        accounts: ['0x' + process.env.REACT_APP_PRIVATE_KEY_MATIC]
@@ -37,7 +44,7 @@ module.exports = {
     tests: "./src/backend/test"
   },
   etherscan: {
-    // apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY
-    apiKey: process.env.REACT_APP_POLYGONSCAN_API_KEY
+    apiKey: process.env.REACT_APP_ETHERSCAN_API_KEY
+    // apiKey: process.env.REACT_APP_POLYGONSCAN_API_KEY
   }
 };
