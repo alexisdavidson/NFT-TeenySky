@@ -80,7 +80,7 @@ contract NFT is ERC721A, Ownable {
     }
 
     function contractURI() public pure returns (string memory) {
-        return "ipfs://QmWBjrx4QnwwLWzu1GosaLw1wv3ikvC5Tq7sJUcqEzr3So/";
+        return "ipfs://QmUgsSLcJTFFqRbbF4SSYpW5AFPpq3FUc8GHRVet5K7szw/";
     }
 
     function setPublicSaleEnabled(bool _state) public onlyOwner {
