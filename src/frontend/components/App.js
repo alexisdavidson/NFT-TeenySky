@@ -4,26 +4,22 @@ import {
   Route
 } from "react-router-dom"
 import './App.css';
-import Navigation from './Navbar';
-import Home from './Home';
+import Mint from './Mint';
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
-import { Spinner } from 'react-bootstrap'
+import { Container, Row, Col } from 'react-bootstrap'
 
 import NFTAbi from '../contractsData/NFT.json'
 import NFTAddress from '../contractsData/NFT-address.json'
-import TokenAbi from '../contractsData/Token.json'
-import TokenAddress from '../contractsData/Token-address.json'
-import StakerAbi from '../contractsData/NFTStaker.json'
-import StakerAddress from '../contractsData/NFTStaker-address.json'
+ 
 
 function App() {
-  const [loading, setLoading] = useState(true)
   const [account, setAccount] = useState(null)
   const [nft, setNFT] = useState({})
-  const [token, setToken] = useState({})
-  const [staker, setStaker] = useState({})
+  const [price, setPrice] = useState(0)
+  const [stats, setStats] = useState([])
+  const [loading, setLoading] = useState(true)
 
   // MetaMask Login/Connect
   const web3Handler = async () => {
@@ -31,40 +27,69 @@ function App() {
     setAccount(accounts[0])
 
     const provider = new ethers.providers.Web3Provider(window.ethereum)
-
     const signer = provider.getSigner()
 
     loadContracts(signer)
   }
 
-  const loadContracts = async (signer) => {
-    const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer)
-    const token = new ethers.Contract(TokenAddress.address, TokenAbi.abi, signer)
-    const staker = new ethers.Contract(StakerAddress.address, StakerAbi.abi, signer)
+  const fetchOpenseaStats = async () => {
+      const urlApi = 'https://testnets-api.opensea.io/api/v1' // testnet
+      // const urlApi = 'https://api.opensea.io/api/v1' // mainnet
+      const nameCollection = 'skoodle-skulls'
+      const finalUrl = `${urlApi}/collection/${nameCollection}`
+      console.log("Sending api call for stats to " + finalUrl)
 
+      let stats = await fetch(finalUrl)
+      .then((res) => res.json())
+      .then((res) => {
+        return res.collection.stats
+      })
+      .catch((e) => {
+        console.error(e)
+        console.error('Could not talk to OpenSea')
+        return null
+      })
+
+      console.log("Finished loading stats")
+      console.log(stats)
+
+      setStats(stats)
+      setLoading(false)
+  }
+    
+  const loadPrice = async(nft) => {
+    console.log("Setting price...")
+    const priceToSet = ethers.utils.formatEther(await nft.getPrice())
+    setPrice(priceToSet)
+    console.log("Set price to " + priceToSet)
+}
+
+  const loadContracts = async (signer) => {
+    console.log("Load nft " + NFTAddress.address)
+    const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer)
     setNFT(nft)
-    setToken(token)
-    setStaker(staker)
+    loadPrice(nft)
     setLoading(false)
   }
+  
+  useEffect(() => {
+    // fetchOpenseaStats()
+  }, [])
 
   return (
     <BrowserRouter>
-      <div className="App">
-        <Navigation web3Handler={web3Handler} account={account} />
-        { loading ? (
-          <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh'}}>
-            <Spinner animation="border" style={{ display: 'flex' }} />
-            <p className='mx-3 my-0'>Awaiting MetaMask Connection...</p>
+        <div className="App m-0 p-0">
+            <Row className="m-0 p-0">
+              <Col className="m-0 p-0">
+                <Mint web3Handler={web3Handler} account={account} nft={nft}/>
+              </Col>
+            </Row>
+          <div>
+            {/* <Container fluid="sm" className=" px-3 pt-3">
+              <Footer />
+            </Container> */}
           </div>
-        ) : (
-          <Routes>
-            <Route path="/" element={
-              <Home account={account} nft={nft} token={token} staker={staker} />
-            } />
-          </Routes>
-        ) }
-      </div>
+        </div>
     </BrowserRouter>
   );
 }
