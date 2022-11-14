@@ -39,6 +39,10 @@ contract NFT is ERC721A, Ownable {
         // Transfer ownership
         _transferOwnership(ownerAddress);
     }
+    
+    function _startTokenId() internal view override returns (uint256) {
+        return 1;
+    }
 
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
         require(_exists(_tokenId), 'ERC721Metadata: URI query for nonexistent token');
