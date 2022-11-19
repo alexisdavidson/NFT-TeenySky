@@ -3,7 +3,7 @@
   /* background-size: cover; */
   background-color: #5b5b5b;
   color: white;
-  font-family: Montserrat;
+  /* font-family: Montserrat; */
 }
 body {
   background-color: #5b5b5b;
@@ -164,12 +164,12 @@ h1, h2, .bigText {
 }
 
 .mintbutton {
-  width: 14rem;
+  width: 20vh;
   margin: auto;
   background-color: #cc4dd4;
   border-radius: 10rem;
   height: 4rem;
-  font-size: 1.4rem;
+  font-size: 3vh;
   font-weight: bold;
   border-color:#cc4dd4;
   margin-bottom: 4vh;
