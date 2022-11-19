@@ -20,6 +20,7 @@ function App() {
   const [price, setPrice] = useState(0)
   const [stats, setStats] = useState([])
   const [loading, setLoading] = useState(true)
+  const [ticketsLeft, setTicketsLeft] = useState(15000)
 
   // MetaMask Login/Connect
   const web3Handler = async () => {
@@ -30,31 +31,6 @@ function App() {
     const signer = provider.getSigner()
 
     loadContracts(signer)
-  }
-
-  const fetchOpenseaStats = async () => {
-      const urlApi = 'https://testnets-api.opensea.io/api/v1' // testnet
-      // const urlApi = 'https://api.opensea.io/api/v1' // mainnet
-      const nameCollection = 'skoodle-skulls'
-      const finalUrl = `${urlApi}/collection/${nameCollection}`
-      console.log("Sending api call for stats to " + finalUrl)
-
-      let stats = await fetch(finalUrl)
-      .then((res) => res.json())
-      .then((res) => {
-        return res.collection.stats
-      })
-      .catch((e) => {
-        console.error(e)
-        console.error('Could not talk to OpenSea')
-        return null
-      })
-
-      console.log("Finished loading stats")
-      console.log(stats)
-
-      setStats(stats)
-      setLoading(false)
   }
     
   const loadPrice = async(nft) => {
@@ -67,13 +43,17 @@ function App() {
   const loadContracts = async (signer) => {
     console.log("Load nft " + NFTAddress.address)
     const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer)
+    
+    const ticketsLeftTemp = 15000 - await nft.totalSupply()
+    console.log("tickets left: " + ticketsLeftTemp)
+    setTicketsLeft(ticketsLeftTemp)
+
     setNFT(nft)
     loadPrice(nft)
     setLoading(false)
   }
   
   useEffect(() => {
-    // fetchOpenseaStats()
   }, [])
 
   return (
@@ -81,7 +61,7 @@ function App() {
         <div className="App m-0 p-0">
             <Row className="m-0 p-0">
               <Col className="m-0 p-0">
-                <Mint web3Handler={web3Handler} account={account} nft={nft}/>
+                <Mint web3Handler={web3Handler} account={account} nft={nft} ticketsLeft={ticketsLeft}/>
               </Col>
             </Row>
           <div>

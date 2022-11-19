@@ -1,12 +1,12 @@
 .App {
   text-align: center;
   /* background-size: cover; */
-  background-color: black;
+  background-color: #5b5b5b;
   color: white;
   font-family: Montserrat;
 }
 body {
-  background-color: black;
+  background-color: #5b5b5b;
 }
 
 .logo:hover {
@@ -164,20 +164,43 @@ h1, h2, .bigText {
 }
 
 .mintbutton {
-  width: 25rem;
+  width: 14rem;
   margin: auto;
-  background-color: #bb1f71;
+  background-color: #cc4dd4;
   border-radius: 10rem;
   height: 4rem;
   font-size: 1.4rem;
   font-weight: bold;
-  border-color:#bb1f71;
+  border-color:#cc4dd4;
   margin-bottom: 4vh;
 }
 
 .mintbutton:hover, .mintbutton:active, .mintbutton:focus {
-  background-color: #bb1f71;
-  border-color:#bb1f71;
+  background-color: #cc4dd4;
+  border-color:#cc4dd4;
+}
+
+.mintCount {
+  font-size: 3rem;
+}
+
+.mintAddress {
+  font-size: 1rem;
+  font-weight: bold;
+  color:#cc4dd4;
+}
+
+.mintOpenSea {
+
+}
+
+.mintCost {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.mintCost2 {
+  font-weight: bold;
 }
 
 .quantityselector {
@@ -186,12 +209,12 @@ h1, h2, .bigText {
 }
 
 .buttonquantity {
-  font-size: 3rem;
+  font-size: 2rem;
   cursor: pointer;
 }
 
 .quantity {
-  font-size: 3rem;
+  font-size: 2rem;
   padding-left: 3rem;
   padding-right: 3rem;
 }
