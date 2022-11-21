@@ -64,11 +64,11 @@ const Mint = ({ web3Handler, account, nft, ticketsLeft }) => {
                     <div className="mintAddress">{account ? (<>{account}</>) : (<></>)}</div>
                 </Row>
                 <Row className="m-0 d-flex justify-content-center align-items-center">
-                    <Button className="mintbutton my-3 mx-0" onClick={openseaRoadmap}>Roadmap</Button>
+                    <Button className="mintbutton my-3 mx-0" onClick={openseaRoadmap}>Our Journey</Button>
                     <Button className="mintbutton my-3 me-0 ms-5" onClick={openseaButton}>OpenSea</Button>
                 </Row>
                 <Row className="m-auto">
-                    <div className="mintCost">1 SKNFT costs 4 Matic.</div>
+                    <div className="mintCost">1 teenySkySJBBs costs 326 Matic</div>
                 </Row>
                 <Row className="m-auto">
                     <div className="mintCost2">Excluding gas fees</div>
@@ -90,8 +90,8 @@ const Mint = ({ web3Handler, account, nft, ticketsLeft }) => {
                         <span className="buttonquantity" onClick={() => changeQuantity(1)}>+</span>
                     </Col>
                     <Col className="d-none d-lg-block col-5">
-                        <a href="https://opensea.io/" target="_blank" id="exOpensea"></a>
-                        <a href="https://google.com/" target="_blank" id="exRoadmap"></a>
+                        <a href="https://opensea.io/collection/teenyskysjbbs-collection-206957487" target="_blank" id="exOpensea"></a>
+                        <a href="https://www.teenyskysjbbs.io/" target="_blank" id="exRoadmap"></a>
                     </Col>
                 </Row>
                 <Row className="pt-3 mx-auto">
