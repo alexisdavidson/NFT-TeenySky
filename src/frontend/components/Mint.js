@@ -8,7 +8,7 @@ import { ethers } from 'ethers'
 const fromWei = (num) => ethers.utils.formatEther(num)
 const toWei = (num) => ethers.utils.parseEther(num.toString())
 
-const Mint = ({ web3Handler, account, nft, ticketsLeft }) => {
+const Mint = ({ web3Handler, account, nft, ticketsLeft, price }) => {
     let navigate = useNavigate(); 
     const [quantity, setQuantity] = useState(1)
 
@@ -68,7 +68,7 @@ const Mint = ({ web3Handler, account, nft, ticketsLeft }) => {
                     <Button className="mintbutton my-3 me-0 ms-5" onClick={openseaButton}>OpenSea</Button>
                 </Row>
                 <Row className="m-auto">
-                    <div className="mintCost">1 teenySkySJBBs costs 326 Matic</div>
+                    <div className="mintCost">1 teenySkySJBBs costs {price} Matic</div>
                 </Row>
                 <Row className="m-auto">
                     <div className="mintCost2">Excluding gas fees</div>

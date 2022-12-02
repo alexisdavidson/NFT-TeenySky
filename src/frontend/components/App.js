@@ -14,6 +14,9 @@ import NFTAbi from '../contractsData/NFT.json'
 import NFTAddress from '../contractsData/NFT-address.json'
  
 
+const fromWei = (num) => ethers.utils.formatEther(num)
+const toWei = (num) => ethers.utils.parseEther(num.toString())
+
 function App() {
   const [account, setAccount] = useState(null)
   const [nft, setNFT] = useState({})
@@ -35,7 +38,7 @@ function App() {
     
   const loadPrice = async(nft) => {
     console.log("Setting price...")
-    const priceToSet = ethers.utils.formatEther(await nft.getPrice())
+    const priceToSet = fromWei(await nft.getPrice())
     setPrice(priceToSet)
     console.log("Set price to " + priceToSet)
 }
@@ -61,7 +64,7 @@ function App() {
         <div className="App m-0 p-0">
             <Row className="m-0 p-0">
               <Col className="m-0 p-0">
-                <Mint web3Handler={web3Handler} account={account} nft={nft} ticketsLeft={ticketsLeft}/>
+                <Mint web3Handler={web3Handler} account={account} nft={nft} ticketsLeft={ticketsLeft} price={price} />
               </Col>
             </Row>
           <div>
