@@ -29,11 +29,7 @@ function App() {
   const web3Handler = async () => {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     setAccount(accounts[0])
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum)
-    const signer = provider.getSigner()
-
-    loadContracts(signer)
+    loadPrice(nft)
   }
     
   const loadPrice = async(nft) => {
@@ -43,7 +39,10 @@ function App() {
     console.log("Set price to " + priceToSet)
 }
 
-  const loadContracts = async (signer) => {
+  const loadContracts = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum)
+    const signer = provider.getSigner()
+
     console.log("Load nft " + NFTAddress.address)
     const nft = new ethers.Contract(NFTAddress.address, NFTAbi.abi, signer)
     
@@ -57,6 +56,7 @@ function App() {
   }
   
   useEffect(() => {
+    loadContracts()
   }, [])
 
   return (
