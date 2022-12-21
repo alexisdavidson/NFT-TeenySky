@@ -29,7 +29,7 @@ function App() {
   const web3Handler = async () => {
     const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
     setAccount(accounts[0])
-    loadPrice(nft)
+    loadContracts()
   }
     
   const loadPrice = async(nft) => {
@@ -53,10 +53,10 @@ function App() {
     setNFT(nft)
     loadPrice(nft)
     setLoading(false)
+    loadPrice(nft)
   }
   
   useEffect(() => {
-    loadContracts()
   }, [])
 
   return (
