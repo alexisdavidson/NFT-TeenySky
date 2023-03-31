@@ -19,9 +19,8 @@ contract NFT is ERC721A, Ownable {
     bool public isRevealed;
     bool public paused;
 
-    string private constant baseUri10000 = "ipfs://QmSyiuuT6QcCoLcy15MwoFn6dgkgzg63ebFvrxQLerFkMe/";
-    string private constant baseUri15000 = "ipfs://QmTrrNAKRTz286SYD3a7BmnqGcHG1rp2E387AcAEJi8Adm/";
-    string private constant unrevealedUri = "ipfs://QmRVuGy5diJWnNsyQaCEYKiMcS84TqjyBKzZRpn8R2aqhP";
+    string private constant baseUri = "ipfs://bafybeihml2ooe5tugsrhost2wl27j7pu7j7oz27gtb7y2ju3rmrgrhhhwm/";
+    string private constant unrevealedUri = "ipfs://bafybeid7biiti4zfgzy3i6mmigz2jimpjeymxkak4srhhsz4sgmkuuwiyq";
 
     uint256 public publicSalePrice = 323.8 ether;
     uint256 public whitelistPrice = 200.7 ether;
@@ -52,9 +51,6 @@ contract NFT is ERC721A, Ownable {
         }
 
         string memory currentBaseURI = _baseURI();
-        if (_tokenId > 10000) {
-            currentBaseURI = baseUri15000;
-        }
         return bytes(currentBaseURI).length > 0
             ? string(abi.encodePacked(currentBaseURI, Strings.toString(_tokenId), uriSuffix))
             : '';
@@ -76,7 +72,7 @@ contract NFT is ERC721A, Ownable {
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return baseUri10000;
+        return baseUri;
     }
     
     function baseTokenURI() public pure returns (string memory) {
@@ -84,7 +80,7 @@ contract NFT is ERC721A, Ownable {
     }
 
     function contractURI() public pure returns (string memory) {
-        return "ipfs://QmYTXasAjwAo63NATCf7pZ6LuLdPJztHWuskSGZKTQesTw/";
+        return "ipfs://bafybeihxqw7tuzts5bvlrqg5tqrpl7s645y3fngchyzlgyrucvmjh6chf4/";
     }
 
     function setPublicSaleEnabled(bool _state) public onlyOwner {
